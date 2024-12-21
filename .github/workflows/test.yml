@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  FOUNDRY_PROFILE: ci
+
+jobs:
+  check:
+    strategy:
+      fail-fast: true
+
+    name: Foundry project
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the repository
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # Set up the working directory to the `contracts/` folder
+      - name: Change working directory to contracts
+        run: cd contracts
+
+      # Install Foundry
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      # Show Forge version
+      - name: Show Forge version
+        working-directory: contracts
+        run: |
+          forge --version
+
+      # Run Forge formatting check
+      - name: Run Forge fmt
+        working-directory: contracts
+        run: |
+          forge fmt --check
+        id: fmt
+
+      # Run Forge build
+      - name: Run Forge build
+        working-directory: contracts
+        run: |
+          forge build --sizes
+        id: build
+
+      # Run Forge tests
+      - name: Run Forge tests
+        working-directory: contracts
+        run: |
+          forge test -vvv
+        id: test
