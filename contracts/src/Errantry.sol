@@ -15,6 +15,8 @@ import {Lib} from "./libraries/Lib.sol";
 contract Errantry is IErrantry {
     error ClientAlreadyRegistered();
 
+    event ClientRegistered(address indexed client, address smartAccount);
+
     mapping(address => Lib.Client) public clients;
 
     constructor() {}
@@ -32,24 +34,11 @@ contract Errantry is IErrantry {
             errandManager: new ErrandManager(),
             smartAccount: address(0)
         });
+
+        emit ClientRegistered(msg.sender, address(0));
     }
 
-    // function postNewErrand(Lib.PostNewErrandParams calldata params) external {
-    //     Lib.Errand({
-    //         payer: params.client,
-    //         runner: address(0),
-    //         expires: params.expires,
-    //         completed: false,
-    //         paid: false
-    //     });
-    // }
-
-    function payErrandInvoice() external {}
-
     /* >>>>>>>> oracle functions <<<<<<< */
-    function registerNewErrand() external {}
-
-    function updateErrandStatus() external {}
 
     /* >>>>>>>> internal functions <<<<<<< */
 }
