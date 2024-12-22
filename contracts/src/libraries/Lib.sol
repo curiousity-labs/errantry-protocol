@@ -15,7 +15,7 @@ library Lib {
 
     // we are going to restrict this to a single stablecoin for now
     struct PaymentToken {
-        address token;
+        address tokenAddress;
         uint256 amount;
     }
 
