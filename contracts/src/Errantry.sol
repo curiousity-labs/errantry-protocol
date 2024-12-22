@@ -25,8 +25,8 @@ contract Errantry is IErrantry {
     function claimErrandPayment() external {}
 
     /* >>>>>>>> errand client functions <<<<<<< */
-    function registerNewClient() external {
-        if (clients[msg.sender].client != address(0)) {
+    function registerNewClient(address clientAddress) external {
+        if (clients[clientAddress].client != address(0)) {
             revert ClientAlreadyRegistered();
         }
         clients[msg.sender] = Lib.Client({

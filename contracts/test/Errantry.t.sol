@@ -22,7 +22,7 @@ contract ErrantryTest is Test {
 
         // Use prank to impersonate the client for testing
         vm.prank(client);
-        errantry.registerNewClient();
+        errantry.registerNewClient(client);
 
         (address registeredClient, , ) = errantry.clients(client);
 
@@ -38,7 +38,7 @@ contract ErrantryTest is Test {
 
         // First registration should succeed
         vm.prank(client);
-        errantry.registerNewClient();
+        errantry.registerNewClient(client);
 
         // Check that the client is registered
         (address registeredClient, , ) = errantry.clients(client);
@@ -51,7 +51,7 @@ contract ErrantryTest is Test {
         // Expect a revert when trying to register the same client again
         vm.prank(client);
         vm.expectRevert(Errantry.ClientAlreadyRegistered.selector);
-        errantry.registerNewClient();
+        errantry.registerNewClient(client);
 
         // Verify state hasn't changed after the failed attempt
         (registeredClient, , ) = errantry.clients(client);
@@ -63,7 +63,7 @@ contract ErrantryTest is Test {
 
         // Register the client
         vm.prank(client);
-        errantry.registerNewClient();
+        errantry.registerNewClient(client);
 
         // Create params for posting a new errand
         Lib.PostNewErrandParams memory params = Lib.PostNewErrandParams({
