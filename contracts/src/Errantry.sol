@@ -39,6 +39,20 @@ contract Errantry is IErrantry {
     }
 
     /* >>>>>>>> oracle functions <<<<<<< */
+    function postNewErrand(Lib.PostNewErrandParams calldata params) external {
+        clients[params.client].errandManager.postNewErrand(params);
+    }
+
+    function updateErrandRunner(
+        uint256 errandId,
+        address clientAddress,
+        address runner
+    ) external {
+        clients[clientAddress].errandManager.updateErrandRunner(
+            errandId,
+            runner
+        );
+    }
 
     /* >>>>>>>> internal functions <<<<<<< */
 }

@@ -20,11 +20,13 @@ library Lib {
     }
 
     struct PostNewErrandParams {
+        uint256 errandId;
         address client;
         uint256 expires;
         PaymentToken paymentToken;
     }
     struct Errand {
+        uint256 errandId;
         PaymentToken paymentToken;
         // the address of the runner, 0x0 if not yet assigned
         address runner;
