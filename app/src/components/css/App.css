@@ -20,12 +20,45 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+html {
   background: linear-gradient(-45deg, #0b0c10, #1a1c23, #121416, #676666);
   background-size: 400% 400%;
   animation: smooth-gradient 10s ease infinite;
   height: 100vh;
   margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.app {
+  max-width: 90rem;
+}
+
+:is(.card) {
+  background: #1a1c23;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 1rem var(--color-shadow);
+  color: var(--color-text);
+  padding: 1rem;
+  min-width: 20rem;
+}
+
+.popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.popup-top-right {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 @keyframes smooth-gradient {
