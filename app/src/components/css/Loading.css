@@ -1,0 +1,46 @@
+.load {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 1.5rem;
+  color: var(--color-loader);
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+  animation: typing 3.5s steps(8) infinite, blink 3.5s infinite;
+  border-right: 2px solid var(--color-loader); /* Simulates a cursor */
+}
+
+.load::before {
+  content: "Loading..."; /* Text to animate */
+}
+
+@keyframes typing {
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 9ch; /* Matches "Loading..." length */
+  }
+  100% {
+    width: 0; /* Resets for infinite animation */
+  }
+}
+
+@keyframes blink {
+  0%,
+  50% {
+    border-color: var(--color-loader);
+  }
+  51%,
+  90% {
+    border-color: transparent;
+  }
+  91%,
+  95% {
+    border-color: var(--color-loader); /* First blink */
+  }
+  96%,
+  100% {
+    border-color: transparent; /* Second blink */
+  }
+}
