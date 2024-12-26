@@ -1,4 +1,13 @@
 :root {
+  /* Global Variables */
+  --color-text: #f0f0f0; /* Light gray for readability on dark backgrounds */
+  --color-subtext: #c2c2c2; /* Softer gray for subtext */
+  --color-border: #404040; /* Neutral gray for borders */
+  --color-shadow: rgba(0, 0, 0, 0.5); /* Subtle black shadow for cards */
+  --color-error: #ff5e5e; /* Vibrant red for error messages */
+  --color-primary-button: #2196f3; /* Blue for primary buttons */
+  --color-loader: #c723dd; /* Purple for loading animations */
+
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
