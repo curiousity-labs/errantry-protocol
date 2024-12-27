@@ -19,6 +19,7 @@ function WalletDisplay({
   return (
     <div
       className="card padding-animated popup-top-right flex-align-center"
+      style={{ minWidth: "fit-content" }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
