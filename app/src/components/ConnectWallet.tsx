@@ -30,7 +30,10 @@ function WalletDisplay({
         </div>
         {isHovered && (
           <div className="flex gap-2 space-between mt-4">
-            <button className="button-secondary button-icon">
+            <button
+              className="button-secondary button-icon"
+              onClick={() => navigator.clipboard.writeText(connectedAddress)}
+            >
               <CopyIcon />
             </button>
             <button className="button-danger button-icon" onClick={disconnectWallet}>
