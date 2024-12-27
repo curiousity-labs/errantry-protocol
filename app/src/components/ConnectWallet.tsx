@@ -14,7 +14,7 @@ function WalletDisplay({
   connectedAddress: `0x${string}`
   disconnectWallet: () => void
 }) {
-  const [isHovered, setIsHovered] = useState(true)
+  const [isHovered, setIsHovered] = useState(false)
   const displayedAddress = isHovered ? connectedAddress : formatAddress(connectedAddress)
   return (
     <div
