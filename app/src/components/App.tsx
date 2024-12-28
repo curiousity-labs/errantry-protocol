@@ -2,6 +2,7 @@ import { useWalletClient } from "wagmi"
 import "./App.css"
 import ConnectWallet from "./ConnectWallet"
 import { useAppKit, useDisconnect } from "@reown/appkit/react"
+import Errantry from "./Errantry"
 
 function App() {
   const { data: client, isLoading } = useWalletClient()
@@ -16,7 +17,7 @@ function App() {
         connectWallet={open}
         disconnectWallet={disconnect}
       />
-      <div>No Show</div>
+      <Errantry connectedAddress={client?.account.address} />
     </div>
   )
 }
