@@ -4,6 +4,7 @@ import {IErrantry} from "./interfaces/IErrantry.sol";
 import {ErrandManager} from "./ErrandManager.sol";
 import {Lib} from "./libraries/Lib.sol";
 import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
+import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 
 /**
  * Definitions:
@@ -14,7 +15,7 @@ import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
  */
 
 contract Errantry is IErrantry {
-    address private SA_ENTRY_POINT;
+    IEntryPoint private SA_ENTRY_POINT;
     address private TRUSTED_ORACLE;
     error ClientAlreadyRegistered();
 
@@ -22,7 +23,7 @@ contract Errantry is IErrantry {
 
     mapping(address => Lib.Client) private clients;
 
-    constructor(address _entry_point, address _trusted_oracle) {
+    constructor(IEntryPoint _entry_point, address _trusted_oracle) {
         SA_ENTRY_POINT = _entry_point;
         TRUSTED_ORACLE = _trusted_oracle;
     }

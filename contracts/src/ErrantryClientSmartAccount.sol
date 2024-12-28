@@ -1,32 +1,34 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
+import "@account-abstraction/contracts/samples/SimpleAccount.sol";
+import {IErrantryClientSmartAccount} from "./interfaces/IErrantryClientSmartAccount.sol";
 
-import "../lib/account-abstraction/contracts/samples/SimpleAccount.sol";
-
-contract ErrantryClientSmartAccount is SimpleAccount {
+contract ErrantryClientSmartAccount is
+    IErrantryClientSmartAccount,
+    SimpleAccount
+{
     address private TRUSTED_ORACLE;
 
     constructor(
-        address _entryPoint,
-        address TRUSTED_ORACLE
-    ) SimpleAccount(_entryPoint) {}
+        IEntryPoint _entryPoint,
+        address _trustedOracle
+    ) SimpleAccount(_entryPoint) {
+        TRUSTED_ORACLE = _trustedOracle;
+    }
 
     /* >>>>>>>> general external functions <<<<<<< */
-    function validateUserOp(
-        UserOperation calldata userOp,
-        bytes32 userOpHash,
-        uint256 missingAccountFunds
-    ) external override returns (uint256 validationData) {
-        // You could add custom checks here
-        if (
-            keccak256(abi.encodePacked(userOp.callData)) ==
-            keccak256(abi.encodePacked("markErrandAsComplete()"))
-        ) {
-            // Ensure the caller is the trusted oracle
-            require(msg.sender == trustedOracle, "Not authorized");
-        }
+    function _validateSignature(
+        PackedUserOperation calldata userOp,
+        bytes32 userOpHash
+    ) internal override returns (uint256 validationData) {
+        // 1. Add custom checks
+        //    e.g., require(msg.sender == TRUSTED_ORACLE, "Not authorized");
 
-        return super.validateUserOp(userOp, userOpHash, missingAccountFunds);
+        // 2. Call the parent’s logic
+        validationData = super._validateSignature(userOp, userOpHash);
+
+        // 3. Return whatever the parent returns (or augment it)
+        return validationData;
     }
 
     /* >>>>>>>> oracle functions <<<<<<< */
