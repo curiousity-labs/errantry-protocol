@@ -3,7 +3,9 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "target": "es6",
-    "noImplicitAny": false,
+    "strict": true, // Enable strict type checking
+    "noImplicitAny": true, // Disallow implicit 'any' types
+    "skipLibCheck": true, // Skip type checking for libraries to avoid deep instantiation issues
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",
@@ -11,8 +13,21 @@
     "outDir": "dist",
     "baseUrl": ".",
     "allowJs": true,
-    "lib": ["es2017", "dom"],
-    "resolveJsonModule": true
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "resolveJsonModule": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ], // Specify type definitions
+    "allowSyntheticDefaultImports": true // Support synthetic default imports
   },
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*.ts"
+  ], // Include only your source files
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
