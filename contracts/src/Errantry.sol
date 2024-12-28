@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 import {IErrantry} from "./interfaces/IErrantry.sol";
 import {ErrandManager} from "./ErrandManager.sol";
 import {Lib} from "./libraries/Lib.sol";
+import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
 
 /**
  * Definitions:
@@ -13,13 +14,18 @@ import {Lib} from "./libraries/Lib.sol";
  */
 
 contract Errantry is IErrantry {
+    address private SA_ENTRY_POINT;
+    address private TRUSTED_ORACLE;
     error ClientAlreadyRegistered();
 
     event ClientRegistered(address indexed client, address smartAccount);
 
     mapping(address => Lib.Client) private clients;
 
-    constructor() {}
+    constructor(address _entry_point, address _trusted_oracle) {
+        SA_ENTRY_POINT = _entry_point;
+        TRUSTED_ORACLE = _trusted_oracle;
+    }
 
     /* >>>>>>>> open access external functions <<<<<<< */
     function getErrandManagerAddress(
@@ -45,7 +51,10 @@ contract Errantry is IErrantry {
         clients[msg.sender] = Lib.Client({
             client: msg.sender,
             errandManager: new ErrandManager(),
-            smartAccount: address(0)
+            smartAccount: new ErrantryClientSmartAccount(
+                SA_ENTRY_POINT,
+                TRUSTED_ORACLE
+            )
         });
 
         emit ClientRegistered(msg.sender, address(0));

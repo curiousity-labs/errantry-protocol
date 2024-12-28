@@ -13,8 +13,6 @@ docs/
 # Dotenv file
 .env
 
-/contracts/src/*.sol
-
 # Logs
 logs
 *.log
