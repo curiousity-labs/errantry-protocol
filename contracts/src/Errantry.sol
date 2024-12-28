@@ -17,9 +17,22 @@ contract Errantry is IErrantry {
 
     event ClientRegistered(address indexed client, address smartAccount);
 
-    mapping(address => Lib.Client) public clients;
+    mapping(address => Lib.Client) private clients;
 
     constructor() {}
+
+    /* >>>>>>>> open access external functions <<<<<<< */
+    function getErrandManagerAddress(
+        address clientAddress
+    ) public view returns (address) {
+        return address(clients[clientAddress].errandManager);
+    }
+
+    function isClientRegistered(
+        address clientAddress
+    ) public view returns (bool) {
+        return clients[clientAddress].client != address(0);
+    }
 
     /* >>>>>>>> errand runner functions <<<<<<< */
     function claimErrandPayment() external {}
