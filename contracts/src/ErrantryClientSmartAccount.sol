@@ -2,19 +2,17 @@
 pragma solidity ^0.8.28;
 import "@account-abstraction/contracts/samples/SimpleAccount.sol";
 import {IErrantryClientSmartAccount} from "./interfaces/IErrantryClientSmartAccount.sol";
+import "./OnlyOracle.sol";
 
 contract ErrantryClientSmartAccount is
     IErrantryClientSmartAccount,
-    SimpleAccount
+    SimpleAccount,
+    OnlyOracle
 {
-    address private TRUSTED_ORACLE;
-
     constructor(
         IEntryPoint _entryPoint,
         address _trustedOracle
-    ) SimpleAccount(_entryPoint) {
-        TRUSTED_ORACLE = _trustedOracle;
-    }
+    ) SimpleAccount(_entryPoint) OnlyOracle(_trustedOracle) {}
 
     /* >>>>>>>> general external functions <<<<<<< */
     function _validateSignature(
@@ -32,7 +30,7 @@ contract ErrantryClientSmartAccount is
     }
 
     /* >>>>>>>> oracle functions <<<<<<< */
-    function markErrandAsComplete() external {}
+    function markErrandAsComplete() external onlyOracle {}
 
     /* >>>>>>>> internal functions <<<<<<< */
     function _checkErrandFundBalance() internal {}

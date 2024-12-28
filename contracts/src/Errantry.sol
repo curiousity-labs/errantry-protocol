@@ -5,6 +5,7 @@ import {ErrandManager} from "./ErrandManager.sol";
 import {Lib} from "./libraries/Lib.sol";
 import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
+import "./OnlyOracle.sol";
 
 /**
  * Definitions:
@@ -14,18 +15,21 @@ import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint
  * - Errand Client: a person who requests errands to be run
  */
 
-contract Errantry is IErrantry {
+contract Errantry is IErrantry, OnlyOracle {
     IEntryPoint private SA_ENTRY_POINT;
-    address private TRUSTED_ORACLE;
     error ClientAlreadyRegistered();
 
     event ClientRegistered(address indexed client, address smartAccount);
 
+    // only the oracle can post new errands
+
     mapping(address => Lib.Client) private clients;
 
-    constructor(IEntryPoint _entry_point, address _trusted_oracle) {
+    constructor(
+        IEntryPoint _entry_point,
+        address _trusted_oracle
+    ) OnlyOracle(_trusted_oracle) {
         SA_ENTRY_POINT = _entry_point;
-        TRUSTED_ORACLE = _trusted_oracle;
     }
 
     /* >>>>>>>> open access external functions <<<<<<< */
@@ -62,7 +66,9 @@ contract Errantry is IErrantry {
     }
 
     /* >>>>>>>> oracle functions <<<<<<< */
-    function postNewErrand(Lib.PostNewErrandParams calldata params) public {
+    function postNewErrand(
+        Lib.PostNewErrandParams calldata params
+    ) public onlyOracle {
         clients[params.client].errandManager.postNewErrand(params);
     }
 
