@@ -63,13 +63,11 @@ contract ErrandManager is IErrandManager {
     }
 
     function updateErrandCancelled(uint256 errandId) external {
-        Errand storage errand = errands[errandId];
-        errand.cancelled = true;
+        errands[errandId].cancelled = true;
     }
 
     function updateErrandCompleted(uint256 errandId) external {
-        Errand storage errand = errands[errandId];
-        errand.completed = true;
+        errands[errandId].completed = true;
     }
 
     function updateErrandRunner(
