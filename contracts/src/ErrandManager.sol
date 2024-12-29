@@ -70,10 +70,7 @@ contract ErrandManager is IErrandManager {
         errands[errandId].completed = true;
     }
 
-    function updateErrandRunner(
-        uint256 errandId,
-        address runner
-    ) external override {
+    function updateErrandRunner(uint256 errandId, address runner) external {
         errands[errandId].runner = runner;
     }
 
