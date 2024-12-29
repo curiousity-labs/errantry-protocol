@@ -2,13 +2,17 @@
 pragma solidity ^0.8.28;
 
 import {SimpleAccount, IEntryPoint, PackedUserOperation, SIG_VALIDATION_SUCCESS} from "@account-abstraction/contracts/samples/SimpleAccount.sol";
-import {OnlyOracle} from "./OnlyOracle.sol";
+import {IErrantryClientSmartAccount} from "./interfaces/IErrantryClientSmartAccount.sol";
+import {IErrandManager} from "./interfaces/IErrandManager.sol";
 
-contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
+contract ErrantryClientSmartAccount is IErrantryClientSmartAccount {
     constructor(
         IEntryPoint _entryPoint,
-        address _trustedOracle
-    ) SimpleAccount(_entryPoint) OnlyOracle(_trustedOracle) {}
+        address _trustedOracle,
+        IErrandManager _errandManager
+    )
+        IErrantryClientSmartAccount(_entryPoint, _trustedOracle, _errandManager)
+    {}
 
     /* >>>>>>>> general external functions <<<<<<< */
     function _validateSignature(

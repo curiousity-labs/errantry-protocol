@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 import {IErrandManager} from "../interfaces/IErrandManager.sol";
-import {ErrantryClientSmartAccount} from "../ErrantryClientSmartAccount.sol";
+import {IErrantryClientSmartAccount} from "../interfaces/IErrantryClientSmartAccount.sol";
 
 library Lib {
     struct NewClientParams {
@@ -11,7 +11,7 @@ library Lib {
     struct Client {
         address client;
         IErrandManager errandManager;
-        ErrantryClientSmartAccount smartAccount;
+        IErrantryClientSmartAccount smartAccount;
     }
 
     // we are going to restrict this to a single stablecoin for now

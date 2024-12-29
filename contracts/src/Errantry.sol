@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 import {IErrantry} from "./interfaces/IErrantry.sol";
+import {IErrandManager} from "./interfaces/IErrandManager.sol";
 import {ErrandManager} from "./ErrandManager.sol";
-import {Lib} from "./libraries/Lib.sol";
 import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
+import {Lib} from "./libraries/Lib.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {PackedUserOperation} from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
 import "./OnlyOracle.sol";
@@ -54,12 +55,14 @@ contract Errantry is IErrantry, OnlyOracle {
         if (clients[clientAddress].client != address(0)) {
             revert ClientAlreadyRegistered();
         }
+        IErrandManager errandManager = new ErrandManager();
         clients[msg.sender] = Lib.Client({
             client: msg.sender,
-            errandManager: new ErrandManager(),
+            errandManager: errandManager,
             smartAccount: new ErrantryClientSmartAccount(
                 SA_ENTRY_POINT,
-                TRUSTED_ORACLE
+                TRUSTED_ORACLE,
+                errandManager
             )
         });
 
