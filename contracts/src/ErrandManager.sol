@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 import {IErrandManager} from "./interfaces/IErrandManager.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * Definitions:
@@ -10,7 +11,7 @@ import {IErrandManager} from "./interfaces/IErrandManager.sol";
  * - Errand Client: a person who requests errands to be run
  */
 
-contract ErrandManager is IErrandManager {
+contract ErrandManager is IErrandManager, Ownable {
     event ErrandPosted(
         uint256 indexed errandId,
         address indexed client,
@@ -21,7 +22,7 @@ contract ErrandManager is IErrandManager {
     );
     mapping(uint256 => Errand) public errands;
 
-    constructor() {}
+    constructor() Ownable(msg.sender) {}
 
     /* >>>>>>>> errand runner functions <<<<<<< */
 
