@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
-import {Lib} from "./libraries/Lib.sol";
 import {IErrandManager} from "./interfaces/IErrandManager.sol";
 
 /**
@@ -20,7 +19,7 @@ contract ErrandManager is IErrandManager {
         uint256 paymentAmount,
         uint256 expires
     );
-    mapping(uint256 => Lib.Errand) public errands;
+    mapping(uint256 => Errand) public errands;
 
     constructor() {}
 
@@ -29,40 +28,47 @@ contract ErrandManager is IErrandManager {
     /* >>>>>>>> errand client functions <<<<<<< */
 
     /* >>>>>>>> oracle functions <<<<<<< */
-    function postNewErrand(Lib.PostNewErrandParams calldata params) external {
-        errands[params.errandId] = Lib.Errand({
-            errandId: params.errandId,
-            paymentToken: params.paymentToken,
+    function postNewErrand(
+        uint256 errandId,
+        address client,
+        uint256 expires,
+        address tokenAddress,
+        uint256 amount
+    ) external {
+        errands[errandId] = Errand({
+            errandId: errandId,
+            paymentToken: PaymentToken({
+                tokenAddress: tokenAddress,
+                amount: amount
+            }),
             runner: address(0),
-            expires: params.expires,
+            expires: expires,
             completed: false,
             paid: false,
             cancelled: false
         });
 
         emit ErrandPosted(
-            params.errandId,
-            params.client,
+            errandId,
+            client,
             address(0),
-            params.paymentToken.tokenAddress,
-            params.paymentToken.amount,
-            params.expires
+            tokenAddress,
+            amount,
+            expires
         );
     }
 
-    function getErrand(
-        uint256 errandId
-    ) external view returns (Lib.Errand memory) {
+    function getErrand(uint256 errandId) external view returns (Errand memory) {
         return errands[errandId];
     }
 
     function updateErrandCancelled(uint256 errandId) external {
-        Lib.Errand storage errand = errands[errandId];
+        Errand storage errand = errands[errandId];
         errand.cancelled = true;
     }
 
     function updateErrandCompleted(uint256 errandId) external {
-        Lib.Errand storage errand = errands[errandId];
+        Errand storage errand = errands[errandId];
         errand.completed = true;
     }
 
@@ -70,8 +76,7 @@ contract ErrandManager is IErrandManager {
         uint256 errandId,
         address runner
     ) external override {
-        Lib.Errand storage errand = errands[errandId];
-        errand.runner = runner;
+        errands[errandId].runner = runner;
     }
 
     /* >>>>>>>> internal functions <<<<<<< */

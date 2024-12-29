@@ -12,6 +12,19 @@ contract ErrantryClientSmartAccount is IErrantryClientSmartAccount {
     ) IErrantryClientSmartAccount(_entryPoint, _trustedOracle) {}
 
     /* >>>>>>>> general external functions <<<<<<< */
+
+    /* >>>>>>>> oracle functions <<<<<<< */
+    function markErrandAsComplete(
+        IErrandManager _errandManager,
+        uint256 errandId
+    ) external onlyOracle {}
+
+    /* >>>>>>>> internal functions <<<<<<< */
+    function _checkErrandFundBalance() internal {}
+
+    function _payErrands() internal {}
+
+    /* >>>>>>>> overridden functions <<<<<<< */
     function _validateSignature(
         PackedUserOperation calldata userOp,
         bytes32 userOpHash
@@ -34,15 +47,4 @@ contract ErrantryClientSmartAccount is IErrantryClientSmartAccount {
         // For other functions, proceed with the default signature validation
         return super._validateSignature(userOp, userOpHash);
     }
-
-    /* >>>>>>>> oracle functions <<<<<<< */
-    function markErrandAsComplete(
-        IErrandManager _errandManager,
-        uint256 errandId
-    ) external onlyOracle {}
-
-    /* >>>>>>>> internal functions <<<<<<< */
-    function _checkErrandFundBalance() internal {}
-
-    function _payErrands() internal {}
 }

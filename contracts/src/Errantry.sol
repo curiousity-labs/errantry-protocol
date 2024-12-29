@@ -4,7 +4,7 @@ import {IErrantry} from "./interfaces/IErrantry.sol";
 import {IErrandManager} from "./interfaces/IErrandManager.sol";
 import {ErrandManager} from "./ErrandManager.sol";
 import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
-import {Lib} from "./libraries/Lib.sol";
+import {IErrantryClientSmartAccount} from "./interfaces/IErrantryClientSmartAccount.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {PackedUserOperation} from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
 import "./OnlyOracle.sol";
@@ -23,9 +23,31 @@ contract Errantry is IErrantry, OnlyOracle {
 
     event ClientRegistered(address indexed client, address smartAccount);
 
+    struct NewClientParams {
+        address client;
+    }
+
+    struct PaymentToken {
+        address tokenAddress;
+        uint256 amount;
+    }
+
+    struct Client {
+        address client;
+        IErrandManager errandManager;
+        IErrantryClientSmartAccount smartAccount;
+    }
+
+    struct PostNewErrandParams {
+        uint256 errandId;
+        address client;
+        uint256 expires;
+        PaymentToken paymentToken;
+    }
+
     // only the oracle can post new errands
 
-    mapping(address => Lib.Client) private clients;
+    mapping(address => Client) private clients;
 
     constructor(
         IEntryPoint _entry_point,
@@ -55,7 +77,7 @@ contract Errantry is IErrantry, OnlyOracle {
         if (clients[clientAddress].client != address(0)) {
             revert ClientAlreadyRegistered();
         }
-        clients[msg.sender] = Lib.Client({
+        clients[msg.sender] = Client({
             client: msg.sender,
             errandManager: new ErrandManager(),
             smartAccount: new ErrantryClientSmartAccount(
@@ -69,9 +91,15 @@ contract Errantry is IErrantry, OnlyOracle {
 
     /* >>>>>>>> oracle functions <<<<<<< */
     function postNewErrand(
-        Lib.PostNewErrandParams calldata params
+        PostNewErrandParams calldata params
     ) public onlyOracle {
-        clients[params.client].errandManager.postNewErrand(params);
+        clients[params.client].errandManager.postNewErrand(
+            params.errandId,
+            params.client,
+            params.expires,
+            params.paymentToken.tokenAddress,
+            params.paymentToken.amount
+        );
     }
 
     function updateErrandRunner(
