@@ -8,11 +8,8 @@ import {IErrandManager} from "./interfaces/IErrandManager.sol";
 contract ErrantryClientSmartAccount is IErrantryClientSmartAccount {
     constructor(
         IEntryPoint _entryPoint,
-        address _trustedOracle,
-        IErrandManager _errandManager
-    )
-        IErrantryClientSmartAccount(_entryPoint, _trustedOracle, _errandManager)
-    {}
+        address _trustedOracle
+    ) IErrantryClientSmartAccount(_entryPoint, _trustedOracle) {}
 
     /* >>>>>>>> general external functions <<<<<<< */
     function _validateSignature(
@@ -39,7 +36,10 @@ contract ErrantryClientSmartAccount is IErrantryClientSmartAccount {
     }
 
     /* >>>>>>>> oracle functions <<<<<<< */
-    function markErrandAsComplete(uint256 errandId) external onlyOracle {}
+    function markErrandAsComplete(
+        IErrandManager _errandManager,
+        uint256 errandId
+    ) external onlyOracle {}
 
     /* >>>>>>>> internal functions <<<<<<< */
     function _checkErrandFundBalance() internal {}

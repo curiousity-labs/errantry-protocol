@@ -55,14 +55,12 @@ contract Errantry is IErrantry, OnlyOracle {
         if (clients[clientAddress].client != address(0)) {
             revert ClientAlreadyRegistered();
         }
-        IErrandManager errandManager = new ErrandManager();
         clients[msg.sender] = Lib.Client({
             client: msg.sender,
-            errandManager: errandManager,
+            errandManager: new ErrandManager(),
             smartAccount: new ErrantryClientSmartAccount(
                 SA_ENTRY_POINT,
-                TRUSTED_ORACLE,
-                errandManager
+                TRUSTED_ORACLE
             )
         });
 
