@@ -1,14 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
-import "@account-abstraction/contracts/samples/SimpleAccount.sol";
-import {IErrantryClientSmartAccount} from "./interfaces/IErrantryClientSmartAccount.sol";
-import "./OnlyOracle.sol";
 
-contract ErrantryClientSmartAccount is
-    IErrantryClientSmartAccount,
-    SimpleAccount,
-    OnlyOracle
-{
+import {SimpleAccount, IEntryPoint, PackedUserOperation, SIG_VALIDATION_SUCCESS} from "@account-abstraction/contracts/samples/SimpleAccount.sol";
+import {OnlyOracle} from "./OnlyOracle.sol";
+
+contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
     constructor(
         IEntryPoint _entryPoint,
         address _trustedOracle
@@ -19,18 +15,27 @@ contract ErrantryClientSmartAccount is
         PackedUserOperation calldata userOp,
         bytes32 userOpHash
     ) internal override returns (uint256 validationData) {
-        // 1. Add custom checks
-        //    e.g., require(msg.sender == TRUSTED_ORACLE, "Not authorized");
+        bytes memory _callData = userOp.callData;
+        // Extract the function selector from the first 4 bytes of callData
+        bytes4 functionSelector;
+        assembly {
+            functionSelector := calldataload(add(_callData, 0x20)) // Skip the 32-byte length prefix of the bytes array
+        }
 
-        // 2. Call the parent’s logic
-        validationData = super._validateSignature(userOp, userOpHash);
+        if (
+            functionSelector == this.markErrandAsComplete.selector &&
+            msg.sender == TRUSTED_ORACLE
+        ) {
+            // Return validation success without further signature checks
+            return SIG_VALIDATION_SUCCESS;
+        }
 
-        // 3. Return whatever the parent returns (or augment it)
-        return validationData;
+        // For other functions, proceed with the default signature validation
+        return super._validateSignature(userOp, userOpHash);
     }
 
     /* >>>>>>>> oracle functions <<<<<<< */
-    function markErrandAsComplete() external onlyOracle {}
+    function markErrandAsComplete(uint256 errandId) external onlyOracle {}
 
     /* >>>>>>>> internal functions <<<<<<< */
     function _checkErrandFundBalance() internal {}

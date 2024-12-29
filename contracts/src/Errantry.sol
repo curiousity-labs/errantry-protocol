@@ -5,6 +5,7 @@ import {ErrandManager} from "./ErrandManager.sol";
 import {Lib} from "./libraries/Lib.sol";
 import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
+import {PackedUserOperation} from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
 import "./OnlyOracle.sol";
 
 /**
