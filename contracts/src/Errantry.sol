@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
+
 import {IErrantry} from "./interfaces/IErrantry.sol";
 import {IErrandManager} from "./interfaces/IErrandManager.sol";
 import {ErrandManager} from "./ErrandManager.sol";
@@ -16,21 +17,12 @@ import "./OnlyOracle.sol";
  * - Errand Runner: a person who runs errands
  * - Errand Client: a person who requests errands to be run
  */
-
 contract Errantry is IErrantry, OnlyOracle {
     IEntryPoint private SA_ENTRY_POINT;
+
     error ClientAlreadyRegistered();
 
     event ClientRegistered(address indexed client, address smartAccount);
-
-    struct NewClientParams {
-        address client;
-    }
-
-    struct PaymentToken {
-        address tokenAddress;
-        uint256 amount;
-    }
 
     struct Client {
         address client;
@@ -42,30 +34,24 @@ contract Errantry is IErrantry, OnlyOracle {
         uint256 errandId;
         address client;
         uint256 expires;
-        PaymentToken paymentToken;
+        address tokenAddress;
+        uint256 amount;
     }
 
     // only the oracle can post new errands
 
     mapping(address => Client) private clients;
 
-    constructor(
-        IEntryPoint _entry_point,
-        address _trusted_oracle
-    ) OnlyOracle(_trusted_oracle) {
+    constructor(IEntryPoint _entry_point, address _trusted_oracle) OnlyOracle(_trusted_oracle) {
         SA_ENTRY_POINT = _entry_point;
     }
 
     /* >>>>>>>> open access external functions <<<<<<< */
-    function getErrandManagerAddress(
-        address clientAddress
-    ) public view returns (address) {
+    function getErrandManagerAddress(address clientAddress) public view returns (address) {
         return address(clients[clientAddress].errandManager);
     }
 
-    function isClientRegistered(
-        address clientAddress
-    ) public view returns (bool) {
+    function isClientRegistered(address clientAddress) public view returns (bool) {
         return clients[clientAddress].client != address(0);
     }
 
@@ -80,37 +66,21 @@ contract Errantry is IErrantry, OnlyOracle {
         clients[msg.sender] = Client({
             client: msg.sender,
             errandManager: new ErrandManager(),
-            smartAccount: new ErrantryClientSmartAccount(
-                SA_ENTRY_POINT,
-                TRUSTED_ORACLE
-            )
+            smartAccount: new ErrantryClientSmartAccount(SA_ENTRY_POINT, TRUSTED_ORACLE)
         });
 
         emit ClientRegistered(msg.sender, address(0));
     }
 
     /* >>>>>>>> oracle functions <<<<<<< */
-    function postNewErrand(
-        PostNewErrandParams calldata params
-    ) public onlyOracle {
+    function postNewErrand(PostNewErrandParams calldata params) public onlyOracle {
         clients[params.client].errandManager.postNewErrand(
-            params.errandId,
-            params.client,
-            params.expires,
-            params.paymentToken.tokenAddress,
-            params.paymentToken.amount
+            params.errandId, params.client, params.expires, params.tokenAddress, params.amount
         );
     }
 
-    function updateErrandRunner(
-        uint256 errandId,
-        address clientAddress,
-        address runner
-    ) external {
-        clients[clientAddress].errandManager.updateErrandRunner(
-            errandId,
-            runner
-        );
+    function updateErrandRunner(uint256 errandId, address clientAddress, address runner) external {
+        clients[clientAddress].errandManager.updateErrandRunner(errandId, runner);
     }
 
     /* >>>>>>>> internal functions <<<<<<< */
