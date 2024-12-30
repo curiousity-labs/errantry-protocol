@@ -8,22 +8,11 @@ interface IErrandManager {
     }
     struct Errand {
         uint256 errandId;
-        PaymentToken paymentToken;
-        // the address of the runner, 0x0 if not yet assigned
+        PaymentToken paymentToken; // the address of the runner, 0x0 if not yet assigned
         address runner;
-        // the block number when the errand expires
-        uint256 expires;
-        /* >>>>>>>> errand status <<<<<<< */
-
-        // @TODO for gas efficiency, we could use a bitfield to store the status
-        // true if the errand has been completed
-        bool completed;
-        // true if the runner has been paid
-        bool paid;
-        bool cancelled;
+        uint256 expires; // the block number when the errand expires
+        uint8 status; // bitfield to store completed/paid/cancelled
     }
-
-    function getErrand(uint256 errandId) external view returns (Errand memory);
 
     function updateErrandRunner(uint256 errandId, address runner) external;
 

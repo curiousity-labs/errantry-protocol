@@ -11,7 +11,18 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * - Errand Client: a person who requests errands to be run
  */
 
+/**
+ * @title ErrandManager
+ * @author @Da-Colon
+ * @notice ErandManager is complimentary to the Errantry contract.
+ * @notice Functions must be called by the Errantry contract via the oracle.
+ */
 contract ErrandManager is IErrandManager, Ownable {
+    // @TODO decide if constant is the way to do go.
+    // uint8 constant STATUS_COMPLETED = 1 << 0; // 1 (binary 00000001)
+    // uint8 constant STATUS_PAID = 1 << 1; // 2 (binary 00000010)
+    // uint8 constant STATUS_CANCELLED = 1 << 2; // 4 (binary 00000100)
+
     event ErrandPosted(
         uint256 indexed errandId,
         address indexed client,
@@ -35,7 +46,7 @@ contract ErrandManager is IErrandManager, Ownable {
         uint256 expires,
         address tokenAddress,
         uint256 amount
-    ) external {
+    ) external onlyOwner {
         errands[errandId] = Errand({
             errandId: errandId,
             paymentToken: PaymentToken({
@@ -44,9 +55,7 @@ contract ErrandManager is IErrandManager, Ownable {
             }),
             runner: address(0),
             expires: expires,
-            completed: false,
-            paid: false,
-            cancelled: false
+            status: 0 // initialized at 0 (not completed, not paid, not cancelled)
         });
 
         emit ErrandPosted(
@@ -59,21 +68,31 @@ contract ErrandManager is IErrandManager, Ownable {
         );
     }
 
-    function getErrand(uint256 errandId) external view returns (Errand memory) {
-        return errands[errandId];
-    }
-
-    function updateErrandCancelled(uint256 errandId) external {
-        errands[errandId].cancelled = true;
-    }
-
-    function updateErrandCompleted(uint256 errandId) external {
-        errands[errandId].completed = true;
-    }
-
-    function updateErrandRunner(uint256 errandId, address runner) external {
+    function updateErrandRunner(
+        uint256 errandId,
+        address runner
+    ) external onlyOwner {
         errands[errandId].runner = runner;
     }
 
+    function markErrandAsComplete(
+        IErrandManager _errandManager,
+        uint256 errandId
+    ) external onlyOwner {}
+
     /* >>>>>>>> internal functions <<<<<<< */
+    function _setStatus(uint256 errandId, uint8 flag) internal {
+        errands[errandId].status |= flag;
+    }
+
+    function _clearStatus(uint256 errandId, uint8 flag) internal {
+        errands[errandId].status &= ~flag;
+    }
+
+    function _hasStatus(
+        uint256 errandId,
+        uint8 flag
+    ) internal view returns (bool) {
+        return (errands[errandId].status & flag) != 0;
+    }
 }

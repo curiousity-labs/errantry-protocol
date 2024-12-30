@@ -10,4 +10,6 @@ abstract contract IErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
         IEntryPoint _entryPoint,
         address _trustedOracle
     ) SimpleAccount(_entryPoint) OnlyOracle(_trustedOracle) {}
+
+    function payErrands() external virtual;
 }
