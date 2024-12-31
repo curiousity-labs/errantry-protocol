@@ -30,10 +30,11 @@ contract Errantry is IErrantry, OnlyOracle {
         if (clients[clientAddress].client != address(0)) {
             revert ClientAlreadyRegistered();
         }
+        ErrantryClientSmartAccount clientSmartAccount = new ErrantryClientSmartAccount(SA_ENTRY_POINT, TRUSTED_ORACLE);
         clients[msg.sender] = Client({
             client: msg.sender,
-            errandManager: new ErrandManager(),
-            smartAccount: new ErrantryClientSmartAccount(SA_ENTRY_POINT, TRUSTED_ORACLE)
+            errandManager: new ErrandManager(address(clientSmartAccount)),
+            smartAccount: clientSmartAccount
         });
 
         emit ClientRegistered(msg.sender, address(0));

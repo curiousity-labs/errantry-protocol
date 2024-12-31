@@ -11,6 +11,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * @notice Functions must be called by the Errantry contract via the oracle.
  */
 contract ErrandManager is IErrandManager, Ownable {
+    address public CLIENT_SMART_ACCOUNT_ADDRESS;
     uint8 constant STATUS_COMPLETED = 1 << 0; // 1 (binary 00000001)
     uint8 constant STATUS_PAID = 1 << 1; // 2 (binary 00000010)
     uint8 constant STATUS_CANCELLED = 1 << 2; // 4 (binary 00000100)
@@ -18,8 +19,8 @@ contract ErrandManager is IErrandManager, Ownable {
     uint256 public errandCount;
     mapping(uint256 => Errand) public errands;
 
-    constructor() Ownable(msg.sender) {
-        // @todo do I care about checking the owner here?
+    constructor(address clientSmartAccount) Ownable(msg.sender) {
+        CLIENT_SMART_ACCOUNT_ADDRESS = clientSmartAccount;
     }
 
     function postNewErrand(uint256 errandId, address client, uint256 expires, address tokenAddress, uint256 amount)
@@ -71,6 +72,10 @@ contract ErrandManager is IErrandManager, Ownable {
         }
 
         return unPaidErrands;
+    }
+
+    function getClientSmartAccountAddress() external view returns (address) {
+        return CLIENT_SMART_ACCOUNT_ADDRESS;
     }
 
     function _setStatus(uint256 errandId, uint8 flag) private {

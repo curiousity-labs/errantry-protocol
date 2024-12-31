@@ -21,8 +21,11 @@ contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
     {}
     /* >>>>>>>> general external functions <<<<<<< */
 
-    function payErrands(IErrandManager errandManager, address _oracleAddress) external {
-        require(_oracleAddress == TRUSTED_ORACLE, "ErrantryClientSmartAccount: only oracle");
+    function payErrands(IErrandManager errandManager) external {
+        require(
+            errandManager.getClientSmartAccountAddress() == address(this),
+            "ErrantryClientSmartAccount: invalid errand manager"
+        );
         IErrandManager.Errand[] memory errands = errandManager.getUnPaidErrands();
 
         for (uint256 i = 0; i < errands.length; i++) {
@@ -48,13 +51,10 @@ contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
             functionSelector := calldataload(add(_callData, 0x20)) // Skip the 32-byte length prefix of the bytes array
         }
 
-        // if (
-        //     functionSelector == this.markErrandAsComplete.selector &&
-        //     msg.sender == TRUSTED_ORACLE
-        // ) {
-        //     // Return validation success without further signature checks
-        //     return SIG_VALIDATION_SUCCESS;
-        // }
+        if (functionSelector == this.payErrands.selector && msg.sender == TRUSTED_ORACLE) {
+            // Return validation success without further signature checks
+            return SIG_VALIDATION_SUCCESS;
+        }
 
         // For other functions, proceed with the default signature validation
         return super._validateSignature(userOp, userOpHash);

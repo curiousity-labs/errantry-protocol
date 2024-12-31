@@ -46,4 +46,6 @@ interface IErrandManager {
     function cancelErrand(uint256 errandId) external;
 
     function getUnPaidErrands() external view returns (Errand[] memory);
+
+    function getClientSmartAccountAddress() external view returns (address);
 }
