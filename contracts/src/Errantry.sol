@@ -9,35 +9,8 @@ import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint
 import {PackedUserOperation} from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
 import "./OnlyOracle.sol";
 
-/**
- * Definitions:
- * - Errantry: the business of running errands
- * - Errand: a short task that needs to be done
- * - Errand Runner: a person who runs errands
- * - Errand Client: a person who requests errands to be run
- */
 contract Errantry is IErrantry, OnlyOracle {
     IEntryPoint private SA_ENTRY_POINT;
-
-    error ClientAlreadyRegistered();
-
-    event ClientRegistered(address indexed client, address smartAccount);
-
-    struct Client {
-        address client;
-        IErrandManager errandManager;
-        ErrantryClientSmartAccount smartAccount;
-    }
-
-    struct PostNewErrandParams {
-        uint256 errandId;
-        address client;
-        uint256 expires;
-        address tokenAddress;
-        uint256 amount;
-    }
-
-    // only the oracle can post new errands
 
     mapping(address => Client) private clients;
 
@@ -45,20 +18,15 @@ contract Errantry is IErrantry, OnlyOracle {
         SA_ENTRY_POINT = _entry_point;
     }
 
-    /* >>>>>>>> open access external functions <<<<<<< */
-    function getErrandManagerAddress(address clientAddress) public view returns (address) {
+    function getErrandManagerAddress(address clientAddress) public view override returns (address) {
         return address(clients[clientAddress].errandManager);
     }
 
-    function isClientRegistered(address clientAddress) public view returns (bool) {
+    function isClientRegistered(address clientAddress) public view override returns (bool) {
         return clients[clientAddress].client != address(0);
     }
 
-    /* >>>>>>>> errand runner functions <<<<<<< */
-    function claimErrandPayment() external {}
-
-    /* >>>>>>>> errand client functions <<<<<<< */
-    function registerNewClient(address clientAddress) external {
+    function registerNewClient(address clientAddress) external override {
         if (clients[clientAddress].client != address(0)) {
             revert ClientAlreadyRegistered();
         }
@@ -71,16 +39,13 @@ contract Errantry is IErrantry, OnlyOracle {
         emit ClientRegistered(msg.sender, address(0));
     }
 
-    /* >>>>>>>> oracle functions <<<<<<< */
-    function postNewErrand(PostNewErrandParams calldata params) public onlyOracle {
+    function postNewErrand(PostNewErrandParams calldata params) public override onlyOracle {
         clients[params.client].errandManager.postNewErrand(
             params.errandId, params.client, params.expires, params.tokenAddress, params.amount
         );
     }
 
-    function updateErrandRunner(uint256 errandId, address clientAddress, address runner) external {
+    function updateErrandRunner(uint256 errandId, address clientAddress, address runner) external override {
         clients[clientAddress].errandManager.updateErrandRunner(errandId, runner);
     }
-
-    /* >>>>>>>> internal functions <<<<<<< */
 }
