@@ -12,7 +12,6 @@ interface IErrantry {
     }
 
     struct PostNewErrandParams {
-        uint256 errandId;
         address client;
         uint256 expires;
         address tokenAddress;

@@ -3,6 +3,7 @@ pragma solidity ^0.8.28;
 
 import {IErrandManager} from "./interfaces/IErrandManager.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title ErrandManager
@@ -10,11 +11,16 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  * @notice ErandManager is complimentary to the Errantry contract.
  * @notice Functions must be called by the Errantry contract via the oracle.
  */
-contract ErrandManager is IErrandManager, Ownable {
+contract ErrandManager is IErrandManager, Ownable, ReentrancyGuard {
     address public CLIENT_SMART_ACCOUNT_ADDRESS;
     uint8 constant STATUS_COMPLETED = 1 << 0; // 1 (binary 00000001)
     uint8 constant STATUS_PAID = 1 << 1; // 2 (binary 00000010)
     uint8 constant STATUS_CANCELLED = 1 << 2; // 4 (binary 00000100)
+
+    modifier onlyClientSA() {
+        require(msg.sender == CLIENT_SMART_ACCOUNT_ADDRESS, MustBeClientSmartAccount());
+        _;
+    }
 
     uint256 public errandCount;
     mapping(uint256 => Errand) public errands;
@@ -23,19 +29,17 @@ contract ErrandManager is IErrandManager, Ownable {
         CLIENT_SMART_ACCOUNT_ADDRESS = clientSmartAccount;
     }
 
-    function postNewErrand(uint256 errandId, address client, uint256 expires, address tokenAddress, uint256 amount)
-        external
-        onlyOwner
-    {
+    function postNewErrand(address client, uint256 expires, address tokenAddress, uint256 amount) external onlyOwner {
         errands[errandCount] = Errand({
+            errandId: errandCount,
             paymentToken: PaymentToken({tokenAddress: tokenAddress, amount: amount}),
             runner: address(0),
             expires: expires,
             status: 0 // initialized at 0 (not completed, not paid, not cancelled)
         });
-        errandCount++;
+        emit ErrandPosted(errandCount, client, address(0), tokenAddress, amount, expires);
 
-        emit ErrandPosted(errandId, client, address(0), tokenAddress, amount, expires);
+        errandCount++;
     }
 
     function updateErrandRunner(uint256 errandId, address runner) external onlyOwner {
@@ -43,14 +47,14 @@ contract ErrandManager is IErrandManager, Ownable {
     }
 
     function markErrandAsComplete(uint256 errandId) external onlyOwner {
-        require(_hasStatus(errandId, STATUS_COMPLETED), ErrandAlreadyCompleted());
+        require(!_hasStatus(errandId, STATUS_COMPLETED), ErrandAlreadyCompleted());
         _setStatus(errandId, STATUS_COMPLETED);
         emit ErrandCompleted(errandId);
     }
 
-    function markErrandAsPaid(uint256 errandId) external onlyOwner {
+    function markErrandAsPaid(uint256 errandId) external onlyClientSA nonReentrant {
         require(_hasStatus(errandId, STATUS_COMPLETED), ErrandNotCompleted());
-        require(_hasStatus(errandId, STATUS_PAID), ErrandAlreadyPaid());
+        require(!_hasStatus(errandId, STATUS_PAID), ErrandAlreadyPaid());
         _setStatus(errandId, STATUS_PAID);
         emit ErrandPaid(errandId);
     }

@@ -42,7 +42,7 @@ contract Errantry is IErrantry, OnlyOracle {
 
     function postNewErrand(PostNewErrandParams calldata params) public onlyOracle {
         clients[params.client].errandManager.postNewErrand(
-            params.errandId, params.client, params.expires, params.tokenAddress, params.amount
+            params.client, params.expires, params.tokenAddress, params.amount
         );
     }
 

@@ -34,6 +34,7 @@ contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
             if (!_checkErrandFundBalance(token, amount)) {
                 continue;
             }
+            errandManager.markErrandAsPaid(i);
             IERC20(token).safeTransfer(errand.runner, amount);
         }
     }

@@ -8,6 +8,7 @@ interface IErrandManager {
     }
 
     struct Errand {
+        uint256 errandId;
         PaymentToken paymentToken;
         address runner;
         uint256 expires;
@@ -33,9 +34,9 @@ interface IErrandManager {
     error ErrandNotPaid();
     error ErrandAlreadyPaid();
     error ErrandAlreadyCancelled();
+    error MustBeClientSmartAccount();
 
-    function postNewErrand(uint256 errandId, address client, uint256 expires, address tokenAddress, uint256 amount)
-        external;
+    function postNewErrand(address client, uint256 expires, address tokenAddress, uint256 amount) external;
 
     function updateErrandRunner(uint256 errandId, address runner) external;
 
