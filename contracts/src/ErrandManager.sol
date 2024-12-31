@@ -66,15 +66,23 @@ contract ErrandManager is IErrandManager, Ownable, ReentrancyGuard {
     }
 
     function getUnPaidErrands() external view returns (Errand[] memory) {
-        Errand[] memory unPaidErrands = new Errand[](errandCount);
-        uint256 j = 0;
+        // First pass: count how many errands are completed but not paid
+        uint256 count;
+        for (uint256 i = 0; i < errandCount; i++) {
+            if (!_hasStatus(i, STATUS_PAID) && _hasStatus(i, STATUS_COMPLETED)) {
+                count++;
+            }
+        }
+
+        // Second pass: allocate an array of the exact size and fill
+        Errand[] memory unPaidErrands = new Errand[](count);
+        uint256 j;
         for (uint256 i = 0; i < errandCount; i++) {
             if (!_hasStatus(i, STATUS_PAID) && _hasStatus(i, STATUS_COMPLETED)) {
                 unPaidErrands[j] = errands[i];
                 j++;
             }
         }
-
         return unPaidErrands;
     }
 
