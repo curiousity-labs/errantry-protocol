@@ -15,6 +15,8 @@ import {OnlyOracle} from "./OnlyOracle.sol";
 contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
     using SafeERC20 for IERC20;
 
+    error ErrandManagerMismatch();
+
     constructor(IEntryPoint _entryPoint, address _trustedOracle)
         SimpleAccount(_entryPoint)
         OnlyOracle(_trustedOracle)
@@ -22,10 +24,7 @@ contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
     /* >>>>>>>> general external functions <<<<<<< */
 
     function payErrands(IErrandManager errandManager) external {
-        require(
-            errandManager.getClientSmartAccountAddress() == address(this),
-            "ErrantryClientSmartAccount: invalid errand manager"
-        );
+        require(errandManager.getClientSmartAccountAddress() == address(this), ErrandManagerMismatch());
         IErrandManager.Errand[] memory errands = errandManager.getUnPaidErrands();
 
         for (uint256 i = 0; i < errands.length; i++) {
