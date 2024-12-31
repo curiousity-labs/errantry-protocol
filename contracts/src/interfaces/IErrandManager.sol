@@ -6,21 +6,43 @@ interface IErrandManager {
         address tokenAddress;
         uint256 amount;
     }
+
     struct Errand {
         uint256 errandId;
-        PaymentToken paymentToken; // the address of the runner, 0x0 if not yet assigned
+        PaymentToken paymentToken;
         address runner;
-        uint256 expires; // the block number when the errand expires
-        uint8 status; // bitfield to store completed/paid/cancelled
+        uint256 expires;
+        uint8 status;
     }
+
+    event ErrandPosted(
+        uint256 indexed errandId,
+        address indexed client,
+        address indexed runner,
+        address paymentToken,
+        uint256 paymentAmount,
+        uint256 expires
+    );
+
+    event ErrandRunnerUpdated(uint256 indexed errandId, address indexed runner);
+    event ErrandCompleted(uint256 indexed errandId);
+    event ErrandPaid(uint256 indexed errandId);
+    event ErrandCancelled(uint256 indexed errandId);
+
+    error ErrandAlreadyCompleted();
+    error ErrandNotCompleted();
+    error ErrandNotPaid();
+    error ErrandAlreadyPaid();
+    error ErrandAlreadyCancelled();
+
+    function postNewErrand(uint256 errandId, address client, uint256 expires, address tokenAddress, uint256 amount)
+        external;
 
     function updateErrandRunner(uint256 errandId, address runner) external;
 
-    function postNewErrand(
-        uint256 errandId,
-        address client,
-        uint256 expires,
-        address tokenAddress,
-        uint256 amount
-    ) external;
+    function markErrandAsComplete(uint256 errandId) external;
+
+    function markErrandAsPaid(uint256 errandId) external;
+
+    function cancelErrand(uint256 errandId) external;
 }
