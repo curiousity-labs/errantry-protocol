@@ -36,7 +36,7 @@ contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
             }
             // @dev IDE warning: "Possible reentrancy in `ErrantryClientSmartAccount.payErrands(contract IErrandManager)`"
             // @dev We are confident that the `markErrandAsPaid` function is safe to call
-            errandManager.markErrandAsPaid(i);
+            errandManager.markErrandAsPaid(errand.errandId);
             IERC20(token).safeTransfer(errand.runner, amount);
         }
     }
