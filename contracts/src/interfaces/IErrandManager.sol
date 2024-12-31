@@ -8,7 +8,6 @@ interface IErrandManager {
     }
 
     struct Errand {
-        uint256 errandId;
         PaymentToken paymentToken;
         address runner;
         uint256 expires;
@@ -45,4 +44,6 @@ interface IErrandManager {
     function markErrandAsPaid(uint256 errandId) external;
 
     function cancelErrand(uint256 errandId) external;
+
+    function getUnPaidErrands() external view returns (Errand[] memory);
 }

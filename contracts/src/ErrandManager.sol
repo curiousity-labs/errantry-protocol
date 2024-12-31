@@ -15,6 +15,7 @@ contract ErrandManager is IErrandManager, Ownable {
     uint8 constant STATUS_PAID = 1 << 1; // 2 (binary 00000010)
     uint8 constant STATUS_CANCELLED = 1 << 2; // 4 (binary 00000100)
 
+    uint256 public errandCount;
     mapping(uint256 => Errand) public errands;
 
     constructor() Ownable(msg.sender) {
@@ -25,13 +26,13 @@ contract ErrandManager is IErrandManager, Ownable {
         external
         onlyOwner
     {
-        errands[errandId] = Errand({
-            errandId: errandId,
+        errands[errandCount] = Errand({
             paymentToken: PaymentToken({tokenAddress: tokenAddress, amount: amount}),
             runner: address(0),
             expires: expires,
             status: 0 // initialized at 0 (not completed, not paid, not cancelled)
         });
+        errandCount++;
 
         emit ErrandPosted(errandId, client, address(0), tokenAddress, amount, expires);
     }
@@ -57,6 +58,19 @@ contract ErrandManager is IErrandManager, Ownable {
         require(!_hasStatus(errandId, STATUS_COMPLETED), ErrandAlreadyCompleted());
         _setStatus(errandId, STATUS_CANCELLED);
         emit ErrandCancelled(errandId);
+    }
+
+    function getUnPaidErrands() external view returns (Errand[] memory) {
+        Errand[] memory unPaidErrands = new Errand[](errandCount);
+        uint256 j = 0;
+        for (uint256 i = 0; i < errandCount; i++) {
+            if (!_hasStatus(i, STATUS_PAID)) {
+                unPaidErrands[j] = errands[i];
+                j++;
+            }
+        }
+
+        return unPaidErrands;
     }
 
     function _setStatus(uint256 errandId, uint8 flag) private {
