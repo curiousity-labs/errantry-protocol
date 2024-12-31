@@ -5,7 +5,6 @@ import {IErrantry} from "./interfaces/IErrantry.sol";
 import {IErrandManager} from "./interfaces/IErrandManager.sol";
 import {ErrandManager} from "./ErrandManager.sol";
 import {ErrantryClientSmartAccount} from "./ErrantryClientSmartAccount.sol";
-import {IErrantryClientSmartAccount} from "./interfaces/IErrantryClientSmartAccount.sol";
 import {IEntryPoint} from "@account-abstraction/contracts/interfaces/IEntryPoint.sol";
 import {PackedUserOperation} from "@account-abstraction/contracts/interfaces/PackedUserOperation.sol";
 import "./OnlyOracle.sol";
@@ -27,7 +26,7 @@ contract Errantry is IErrantry, OnlyOracle {
     struct Client {
         address client;
         IErrandManager errandManager;
-        IErrantryClientSmartAccount smartAccount;
+        ErrantryClientSmartAccount smartAccount;
     }
 
     struct PostNewErrandParams {
