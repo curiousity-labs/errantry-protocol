@@ -64,7 +64,7 @@ contract ErrandManager is IErrandManager, Ownable {
         Errand[] memory unPaidErrands = new Errand[](errandCount);
         uint256 j = 0;
         for (uint256 i = 0; i < errandCount; i++) {
-            if (!_hasStatus(i, STATUS_PAID)) {
+            if (!_hasStatus(i, STATUS_PAID) && _hasStatus(i, STATUS_COMPLETED)) {
                 unPaidErrands[j] = errands[i];
                 j++;
             }
