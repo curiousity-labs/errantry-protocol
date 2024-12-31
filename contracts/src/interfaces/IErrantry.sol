@@ -20,7 +20,7 @@ interface IErrantry {
 
     error ClientAlreadyRegistered();
 
-    event ClientRegistered(address indexed client, address smartAccount);
+    event ClientRegistered(address client);
 
     function getErrandManagerAddress(address clientAddress) external view returns (address);
 

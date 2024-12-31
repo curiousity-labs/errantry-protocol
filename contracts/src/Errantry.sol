@@ -37,7 +37,7 @@ contract Errantry is IErrantry, OnlyOracle {
             smartAccount: clientSmartAccount
         });
 
-        emit ClientRegistered(msg.sender, address(0));
+        emit ClientRegistered(msg.sender);
     }
 
     function postNewErrand(PostNewErrandParams calldata params) public onlyOracle {
