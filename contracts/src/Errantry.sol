@@ -18,15 +18,15 @@ contract Errantry is IErrantry, OnlyOracle {
         SA_ENTRY_POINT = _entry_point;
     }
 
-    function getErrandManagerAddress(address clientAddress) public view override returns (address) {
+    function getErrandManagerAddress(address clientAddress) public view returns (address) {
         return address(clients[clientAddress].errandManager);
     }
 
-    function isClientRegistered(address clientAddress) public view override returns (bool) {
+    function isClientRegistered(address clientAddress) public view returns (bool) {
         return clients[clientAddress].client != address(0);
     }
 
-    function registerNewClient(address clientAddress) external override {
+    function registerNewClient(address clientAddress) external {
         if (clients[clientAddress].client != address(0)) {
             revert ClientAlreadyRegistered();
         }
@@ -40,13 +40,13 @@ contract Errantry is IErrantry, OnlyOracle {
         emit ClientRegistered(msg.sender, address(0));
     }
 
-    function postNewErrand(PostNewErrandParams calldata params) public override onlyOracle {
+    function postNewErrand(PostNewErrandParams calldata params) public onlyOracle {
         clients[params.client].errandManager.postNewErrand(
             params.errandId, params.client, params.expires, params.tokenAddress, params.amount
         );
     }
 
-    function updateErrandRunner(uint256 errandId, address clientAddress, address runner) external override {
+    function updateErrandRunner(uint256 errandId, address clientAddress, address runner) external {
         clients[clientAddress].errandManager.updateErrandRunner(errandId, runner);
     }
 }
