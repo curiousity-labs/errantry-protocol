@@ -9,7 +9,7 @@ systemVersion = '1.0.0'
 title = 'Example Foundry Configuration'
 version = '1.0.0'
 # Project structure
-libs = ['node_modules'] # Directories to search for libraries            
+libs = ["node_modules", "lib"]
 out = 'out' # Output directory for compiled artifacts
 script = 'script' # Script directory
 src = 'src' # Source directory
