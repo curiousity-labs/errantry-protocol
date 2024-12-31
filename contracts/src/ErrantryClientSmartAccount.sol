@@ -7,21 +7,35 @@ import {
     PackedUserOperation,
     SIG_VALIDATION_SUCCESS
 } from "@account-abstraction/contracts/samples/SimpleAccount.sol";
-import {IErrantryClientSmartAccount} from "./interfaces/IErrantryClientSmartAccount.sol";
 import {IErrandManager} from "./interfaces/IErrandManager.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {OnlyOracle} from "./OnlyOracle.sol";
 
-contract ErrantryClientSmartAccount is IErrantryClientSmartAccount {
+contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
+    using SafeERC20 for IERC20;
+
     constructor(IEntryPoint _entryPoint, address _trustedOracle)
-        IErrantryClientSmartAccount(_entryPoint, _trustedOracle)
+        SimpleAccount(_entryPoint)
+        OnlyOracle(_trustedOracle)
     {}
-
     /* >>>>>>>> general external functions <<<<<<< */
-    function payErrands() external override {
-        _payErrands();
+
+    function payErrands(IErrandManager errandManager, address _oracleAddress) external {
+        require(_oracleAddress == TRUSTED_ORACLE, "ErrantryClientSmartAccount: only oracle");
+        IErrandManager.Errand[] memory errands = errandManager.getUnPaidErrands();
+
+        for (uint256 i = 0; i < errands.length; i++) {
+            IErrandManager.Errand memory errand = errands[i];
+            address token = errand.paymentToken.tokenAddress;
+            uint256 amount = errand.paymentToken.amount;
+            if (!_checkErrandFundBalance(token, amount)) {
+                continue;
+            }
+            IERC20(token).safeTransfer(errand.runner, amount);
+        }
     }
 
-    /* >>>>>>>> overridden functions <<<<<<< */
     function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash)
         internal
         override
@@ -47,10 +61,7 @@ contract ErrantryClientSmartAccount is IErrantryClientSmartAccount {
     }
 
     /* >>>>>>>> internal functions <<<<<<< */
-    function _checkErrandFundBalance(address token, uint256 requiredAmount) internal view {
-        uint256 balance = IERC20(token).balanceOf(address(this));
-        require(balance >= requiredAmount, "Insufficient token balance for errands");
+    function _checkErrandFundBalance(address token, uint256 requiredAmount) internal view returns (bool) {
+        return IERC20(token).balanceOf(address(this)) >= requiredAmount;
     }
-
-    function _payErrands() internal {}
 }
