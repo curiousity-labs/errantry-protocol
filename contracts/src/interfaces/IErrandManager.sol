@@ -11,7 +11,6 @@ interface IErrandManager {
         uint256 errandId;
         PaymentToken paymentToken;
         address runner;
-        uint256 expires;
         uint8 status;
     }
 
@@ -49,4 +48,6 @@ interface IErrandManager {
     function getUnPaidErrands() external view returns (Errand[] memory);
 
     function getClientSmartAccountAddress() external view returns (address);
+
+    function getErrand(uint256 errandId) external view returns (Errand memory);
 }

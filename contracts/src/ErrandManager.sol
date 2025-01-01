@@ -29,12 +29,15 @@ contract ErrandManager is IErrandManager, Ownable, ReentrancyGuard {
         CLIENT_SMART_ACCOUNT_ADDRESS = clientSmartAccount;
     }
 
+    function getErrand(uint256 errandId) public view returns (IErrandManager.Errand memory) {
+        return errands[errandId];
+    }
+
     function postNewErrand(address client, uint256 expires, address tokenAddress, uint256 amount) external onlyOwner {
         errands[errandCount] = Errand({
             errandId: errandCount,
             paymentToken: PaymentToken({tokenAddress: tokenAddress, amount: amount}),
             runner: address(0),
-            expires: expires,
             status: 0 // initialized at 0 (not completed, not paid, not cancelled)
         });
         emit ErrandPosted(errandCount, client, address(0), tokenAddress, amount, expires);
@@ -79,7 +82,7 @@ contract ErrandManager is IErrandManager, Ownable, ReentrancyGuard {
         uint256 j;
         for (uint256 i = 0; i < errandCount; i++) {
             if (!_hasStatus(i, STATUS_PAID) && _hasStatus(i, STATUS_COMPLETED)) {
-                unPaidErrands[j] = errands[i];
+                unPaidErrands[j] = getErrand(i);
                 j++;
             }
         }
@@ -95,6 +98,6 @@ contract ErrandManager is IErrandManager, Ownable, ReentrancyGuard {
     }
 
     function _hasStatus(uint256 errandId, uint8 flag) private view returns (bool) {
-        return (errands[errandId].status & flag) != 0;
+        return (getErrand(errandId).status & flag) != 0;
     }
 }
