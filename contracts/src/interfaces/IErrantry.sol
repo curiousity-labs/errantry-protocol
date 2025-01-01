@@ -31,4 +31,10 @@ interface IErrantry {
     function postNewErrand(PostNewErrandParams calldata params) external;
 
     function updateErrandRunner(uint256 errandId, address clientAddress, address runner) external;
+
+    function markErrandAsComplete(uint256 errandId, address clientAddress) external;
+
+    function markErrandAsPaid(uint256 errandId, address clientAddress) external;
+
+    function cancelErrand(uint256 errandId, address clientAddress) external;
 }

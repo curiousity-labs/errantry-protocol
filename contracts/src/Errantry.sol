@@ -49,4 +49,16 @@ contract Errantry is IErrantry, OnlyOracle {
     function updateErrandRunner(uint256 errandId, address clientAddress, address runner) external {
         clients[clientAddress].errandManager.updateErrandRunner(errandId, runner);
     }
+
+    function markErrandAsComplete(uint256 errandId, address clientAddress) external onlyOracle {
+        clients[clientAddress].errandManager.markErrandAsComplete(errandId);
+    }
+
+    function markErrandAsPaid(uint256 errandId, address clientAddress) external onlyOracle {
+        clients[clientAddress].errandManager.markErrandAsPaid(errandId);
+    }
+
+    function cancelErrand(uint256 errandId, address clientAddress) external onlyOracle {
+        clients[clientAddress].errandManager.cancelErrand(errandId);
+    }
 }
