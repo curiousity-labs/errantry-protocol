@@ -23,7 +23,7 @@ contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
     {}
     /* >>>>>>>> general external functions <<<<<<< */
 
-    function payErrands(IErrandManager errandManager) external {
+    function payErrands(IErrandManager errandManager) external onlyOracle {
         require(errandManager.getClientSmartAccountAddress() == address(this), ErrandManagerMismatch());
         IErrandManager.Errand[] memory errands = errandManager.getUnPaidErrands();
 
@@ -39,27 +39,6 @@ contract ErrantryClientSmartAccount is SimpleAccount, OnlyOracle {
             errandManager.markErrandAsPaid(errand.errandId);
             IERC20(token).safeTransfer(errand.runner, amount);
         }
-    }
-
-    function _validateSignature(PackedUserOperation calldata userOp, bytes32 userOpHash)
-        internal
-        override
-        returns (uint256 validationData)
-    {
-        bytes memory _callData = userOp.callData;
-        // Extract the function selector from the first 4 bytes of callData
-        bytes4 functionSelector;
-        assembly {
-            functionSelector := calldataload(add(_callData, 0x20)) // Skip the 32-byte length prefix of the bytes array
-        }
-
-        if (functionSelector == this.payErrands.selector && msg.sender == TRUSTED_ORACLE) {
-            // Return validation success without further signature checks
-            return SIG_VALIDATION_SUCCESS;
-        }
-
-        // For other functions, proceed with the default signature validation
-        return super._validateSignature(userOp, userOpHash);
     }
 
     /* >>>>>>>> internal functions <<<<<<< */
