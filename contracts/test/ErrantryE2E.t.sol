@@ -27,7 +27,7 @@ contract ErrantryE2ETest is Test {
     function setUp() public {
         // Deploy MockEntryPoint and MockToken
         mockEntryPoint = new MockEntryPoint();
-        mockToken = new MockERC20("MockToken", "MKT");
+        mockToken = new MockERC20("MockToken", "MKT", 18);
 
         // Deploy Errantry contract
         errantry = new Errantry(mockEntryPoint, oracle);
