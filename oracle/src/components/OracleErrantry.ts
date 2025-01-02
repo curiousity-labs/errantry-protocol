@@ -17,7 +17,7 @@ export default class OracleErrantry {
     return getContract({
       abi: errantryAbi,
       address: this.errantryProtocolAddress,
-      client: this.providerWeb3.writeClient,
+      client: this.providerWeb3.walletClient,
     })
   }
 
@@ -25,7 +25,7 @@ export default class OracleErrantry {
     return getContract({
       abi: errandManagerAbi,
       address: errandManagerAddress,
-      client: this.providerWeb3.writeClient,
+      client: this.providerWeb3.walletClient,
     })
   }
 
@@ -33,7 +33,7 @@ export default class OracleErrantry {
     return getContract({
       abi: errantryClientSmartAccountAbi,
       address: clientSmartAccountAddress,
-      client: this.providerWeb3.readClient,
+      client: this.providerWeb3.walletClient,
     })
   }
 

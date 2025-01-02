@@ -1,11 +1,12 @@
 import * as dotenv from "dotenv"
+import { Address, getAddress } from "viem"
 dotenv.config()
 
 interface Config {
   port: string
   isDev: boolean
   infuraURL: string
-  ethPrivateKey: string
+  ethPrivateKey: Address
   redisURL: string
 }
 
@@ -21,7 +22,7 @@ if (!process.env.INFURA_API_KEY) {
 export const config: Config = {
   port: process.env.PORT,
   isDev: process.env.NODE_ENV === "development",
-  ethPrivateKey: process.env.ETH_PRIVATE_KEY,
+  ethPrivateKey: getAddress(process.env.ETH_PRIVATE_KEY),
   infuraURL: `https://sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`,
   redisURL: process.env.REDIS_URL || "redis://localhost:6379",
 }
