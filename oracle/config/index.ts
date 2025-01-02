@@ -1,13 +1,27 @@
-import { Config } from "../types/app"
-import dotenv from "dotenv"
+import * as dotenv from "dotenv"
 dotenv.config()
 
-const config: Config = {
-  port: process.env.PORT,
-  isDev: process.env.NODE_ENV === "development",
-  ethPrivateKey: process.env.ETH_DEPLOYER_PRIVATE_KEY,
-  etherscanUrl: "https://api.goerli.etherscan.io/api",
-  infuraURL: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
+interface Config {
+  port: string
+  isDev: boolean
+  infuraURL: string
+  ethPrivateKey: string
+  redisURL: string
 }
 
-export default config
+if (!process.env.PORT) {
+  throw new Error("PORT is not defined")
+}
+if (!process.env.ETH_PRIVATE_KEY) {
+  throw new Error("ETH_DEPLOYER_PRIVATE_KEY is not defined")
+}
+if (!process.env.INFURA_API_KEY) {
+  throw new Error("INFURA_API_KEY is not defined")
+}
+export const config: Config = {
+  port: process.env.PORT,
+  isDev: process.env.NODE_ENV === "development",
+  ethPrivateKey: process.env.ETH_PRIVATE_KEY,
+  infuraURL: `https://sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`,
+  redisURL: process.env.REDIS_URL || "redis://localhost:6379",
+}

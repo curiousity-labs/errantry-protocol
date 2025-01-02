@@ -24,7 +24,7 @@
     "allowSyntheticDefaultImports": true // Support synthetic default imports
   },
   "include": [
-    "src/**/*.ts"
+    "src"
   ], // Include only your source files
   "exclude": [
     "node_modules",

@@ -1,5 +1,6 @@
 import { http, PublicClient, WalletClient, createPublicClient, createWalletClient } from "viem"
 import { sepolia } from "viem/chains"
+import { config } from "../../config"
 
 export default class ProviderWeb3 {
   readClient: PublicClient
@@ -8,7 +9,7 @@ export default class ProviderWeb3 {
   constructor() {
     this.readClient = createPublicClient({
       chain: sepolia,
-      transport: http("https://mainnet.infura.io/v3/your-infura-key"),
+      transport: http(config.infuraURL),
     })
     this.writeClient = createWalletClient({
       chain: sepolia,

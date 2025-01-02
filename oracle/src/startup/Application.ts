@@ -3,7 +3,7 @@ import corsOptions from "cors"
 import express from "express"
 import http from "http"
 import morgan from "morgan"
-import config from "../../config"
+import { config } from "../../config"
 
 export default class Application {
   public core: express.Application
@@ -59,7 +59,6 @@ export default class Application {
     this.core.set("port", port)
 
     server.listen(port)
-    console.log("🚀 ~ config:", config)
 
     server.on("error", this.onError)
     server.on("listening", () => {
