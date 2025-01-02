@@ -26,7 +26,7 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: "7.x"
+          version: "8.15.4"
 
       # Install Node dependencies via pnpm
       - name: Install Node Dependencies
