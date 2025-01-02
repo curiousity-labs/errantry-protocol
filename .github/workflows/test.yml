@@ -5,25 +5,33 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  FOUNDRY_PROFILE: ci
-
 jobs:
   check:
-    strategy:
-      fail-fast: true
-
-    name: Foundry project
     runs-on: ubuntu-latest
+    env:
+      FOUNDRY_PROFILE: ci
+
     steps:
-      # Check out the repository
       - uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      # Set up the working directory to the `contracts/` folder
-      - name: Change working directory to contracts
-        run: cd contracts
+      # Set up Node.js directly from .nvmrc
+      - name: Set up Node.js from .nvmrc
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: contracts/.nvmrc
+
+      # Set up pnpm
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: "7.x"
+
+      # Install Node dependencies via pnpm
+      - name: Install Node Dependencies
+        working-directory: contracts
+        run: pnpm install
 
       # Install Foundry
       - name: Install Foundry
@@ -34,26 +42,19 @@ jobs:
       # Show Forge version
       - name: Show Forge version
         working-directory: contracts
-        run: |
-          forge --version
+        run: forge --version
 
       # Run Forge formatting check
       - name: Run Forge fmt
         working-directory: contracts
-        run: |
-          forge fmt --check
-        id: fmt
+        run: forge fmt --check
 
       # Run Forge build
       - name: Run Forge build
         working-directory: contracts
-        run: |
-          forge build --sizes
-        id: build
+        run: forge build --sizes
 
       # Run Forge tests
       - name: Run Forge tests
         working-directory: contracts
-        run: |
-          forge test -vvv
-        id: test
+        run: forge test -vvv
